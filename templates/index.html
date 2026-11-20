@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Processing Portal</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 40px;
+            background: #f4f6f9;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .data-table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .data-table th,
+        .data-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .data-table th {
+            background: #e5e7eb;
+        }
+
+        .report {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Data Processing Portal</h1>
+
+    <p>Upload your CSV or Excel file for processing.</p>
+
+    {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+            <p style="color:red">{{ message }}</p>
+        {% endfor %}
+    {% endwith %}
+
+    <form method="POST"
+          enctype="multipart/form-data">
+
+        <input type="file"
+               name="file"
+               accept=".csv,.xlsx"
+               required>
+
+        <button type="submit">Upload and Process</button>
+
+    </form>
+
+    {% if report %}
+
+    <div class="report">
+
+        <h2>Processing Report</h2>
+
+        <p>Original rows: {{ report.original_rows }}</p>
+
+        <p>Original columns: {{ report.original_columns }}</p>
+
+        <p>Empty rows removed:
+            {{ report.original_rows - report.rows_after_empty_removal }}
+        </p>
+
+        <p>Duplicate rows removed:
+            {{ report.duplicate_rows_removed }}
+        </p>
+
+        <p>Cleaned rows: {{ report.cleaned_rows }}</p>
+
+        <p>Database Report ID: {{ report_id or "Not saved" }}</p>
+
+        <h3>Missing Values</h3>
+
+        <ul>
+            {% for column, count in report.missing_values.items() %}
+                <li>{{ column }}: {{ count }}</li>
+            {% endfor %}
+        </ul>
+
+        <h3>Processed Data Preview</h3>
+
+        {{ preview | safe }}
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>
